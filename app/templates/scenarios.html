@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Scenarios</h2>
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Difficulty</th>
+            <th>Hero</th>
+            <th>Target</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for scenario in scenarios %}
+        <tr>
+            <td>{{ scenario.name }}</td>
+            <td>{{ scenario.author }}</td>
+            <td>{{ scenario.difficulty }}</td>
+            <td>{{ scenario.hero }}</td>
+            <td>{{ scenario.target }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

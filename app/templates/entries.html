@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Logged Entries</h2>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Scenario</th>
+            <th>Score</th>
+            <th>Proof</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entry in entries %}
+        <tr>
+            <td>{{ entry.scenario.name }}</td>
+            <td>{{ entry.score }}</td>
+            <td>
+                {% if entry.proof %}
+                    <a href="{{ entry.proof }}" target="_blank">View Proof</a>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
