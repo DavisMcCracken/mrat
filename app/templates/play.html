@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Play Scenario</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.scenario_id.label }}<br>
+        {{ form.scenario_id(onchange="this.form.submit()") }}
+    </p>
+
+    {% if scenario %}
+        <h3>{{ scenario.name }}</h3>
+        <ul>
+            <li><strong>Author:</strong> {{ scenario.author }}</li>
+            <li><strong>Tags:</strong> {{ scenario.tags }}</li>
+            <li><strong>Difficulty:</strong> {{ scenario.difficulty }}</li>
+            <li><strong>Hero:</strong> {{ scenario.hero }}</li>
+            <li><strong>Target:</strong> {{ scenario.target }}</li>
+            <li><strong>Target Type:</strong> {{ scenario.target_type }}</li>
+            <li><strong>Target Distance:</strong> {{ scenario.target_distance }}</li>
+            <li><strong>Target Range:</strong> {{ scenario.target_range }}</li>
+            <li><strong>Movement Type:</strong> {{ scenario.movement_type }}</li>
+            <li><strong>Movement Action:</strong> {{ scenario.movement_action }}</li>
+            <li><strong>Movement Speed:</strong> {{ scenario.movement_speed }}</li>
+            <li><strong>Timer:</strong> {{ scenario.timer }} seconds</li>
+            <li><strong>Stay Behind Line:</strong> {{ scenario.stay_behind_line }}</li>
+            <li><strong>Use Abilities:</strong> {{ scenario.use_abilities }}</li>
+            <li><strong>No Ability Cooldown:</strong> {{ scenario.no_ability_cooldown }}</li>
+            <li><strong>Scenario Code:</strong> {{ scenario.scenario_code }}</li>
+        </ul>
+
+        <h4>Log Score</h4>
+        <p>{{ form.score.label }}<br>{{ form.score() }}</p>
+        <p>{{ form.proof.label }}<br>{{ form.proof() }}</p>
+        <p>{{ form.submit() }}</p>
+    {% endif %}
+</form>
+{% endblock %}

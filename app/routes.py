@@ -26,27 +26,6 @@ def scenario_list():
     return render_template('scenarios.html', scenarios=scenarios)
 
 
-@bp.route('/log', methods=['GET', 'POST'])
-@login_required
-def log_entry():
-    form = EntryForm()
-    form.set_choices()
-
-    if form.validate_on_submit():
-        entry = Entry(
-            user_id=current_user.id,  # ✅ now using logged-in user
-            scenario_id=form.scenario_id.data,
-            score=form.score.data,
-            proof=form.proof.data
-        )
-        db.session.add(entry)
-        db.session.commit()
-        flash('Score logged successfully!', 'success')
-        return redirect(url_for('main.scenario_list'))
-
-    return render_template('log_entry.html', form=form)
-
-
 @bp.route('/entries')
 def entry_list():
     entries = Entry.query.order_by(Entry.timestamp.desc()).all()
@@ -97,3 +76,40 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('main.login'))
+
+
+@bp.route('/my-entries')
+@login_required
+def my_entries():
+    entries = Entry.query.filter_by(user_id=current_user.id)\
+                         .order_by(Entry.timestamp.desc()).all()
+    return render_template('my_entries.html', entries=entries)
+
+
+@bp.route('/play', methods=['GET', 'POST'])
+@login_required
+def play():
+    form = EntryForm()
+    form.set_choices()
+
+    selected_scenario = None
+    if request.method == 'POST':
+        # Get the selected scenario for display
+        selected_scenario = Scenario.query.get(form.scenario_id.data)
+
+        if form.validate_on_submit():
+            entry = Entry(
+                user_id=current_user.id,
+                scenario_id=form.scenario_id.data,
+                score=form.score.data,
+                proof=form.proof.data
+            )
+            db.session.add(entry)
+            db.session.commit()
+            flash('Score logged successfully!', 'success')
+            return redirect(url_for('main.play'))
+
+    elif form.scenario_id.data:
+        selected_scenario = Scenario.query.get(form.scenario_id.data)
+
+    return render_template('play.html', form=form, scenario=selected_scenario)
