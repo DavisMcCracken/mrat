@@ -31,10 +31,9 @@
             <li><strong>Movement Action:</strong> {{ scenario.movement_action }}</li>
             <li><strong>Movement Speed:</strong> {{ scenario.movement_speed }}</li>
             <li><strong>Timer:</strong> {{ scenario.timer }} seconds</li>
-            <li><strong>Stay Behind Line:</strong> {{ scenario.stay_behind_line }}</li>
-            <li><strong>Use Abilities:</strong> {{ scenario.use_abilities }}</li>
-            <li><strong>No Ability Cooldown:</strong> {{ scenario.no_ability_cooldown }}</li>
-        </ul>
+            <li><strong>Stay Behind Line:</strong> {{ '✅' if scenario.stay_behind_line else '❌' }}</li>
+            <li><strong>Use Abilities:</strong> {{ '✅' if scenario.use_abilities else '❌' }}</li>
+            <li><strong>No Ability Cooldown:</strong> {{ '✅' if scenario.no_ability_cooldown else '❌' }}</li>
 
         <p><a href="{{ url_for('main.leaderboard', scenario_id=scenario.id) }}">View Leaderboard</a></p>
 

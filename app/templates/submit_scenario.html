@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Submit a New Scenario</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div style="display: flex; flex-direction: column; gap: 10px; max-width: 600px;">
+        {{ form.name.label }} {{ form.name(size=40) }}
+        {{ form.notes.label }} {{ form.notes(size=60) }}
+
+        {{ form.tags.label }} {{ form.tags(multiple=True) }}
+
+        {{ form.difficulty.label }} {{ form.difficulty() }}
+
+        {{ form.hero.label }} {{ form.hero() }}
+        {{ form.target.label }} {{ form.target() }}
+        {{ form.scoring.label }} {{ form.scoring() }}
+        {{ form.target_type.label }} {{ form.target_type() }}
+        {{ form.target_distance.label }} {{ form.target_distance() }}
+        {{ form.target_range.label }} {{ form.target_range() }}
+        {{ form.movement_type.label }} {{ form.movement_type() }}
+        {{ form.movement_action.label }} {{ form.movement_action() }}
+        {{ form.movement_speed.label }} {{ form.movement_speed() }}
+        {{ form.timer.label }} {{ form.timer() }}
+        {{ form.stay_behind_line.label }} {{ form.stay_behind_line() }}
+        {{ form.use_abilities.label }} {{ form.use_abilities() }}
+        {{ form.no_ability_cooldown.label }} {{ form.no_ability_cooldown() }}
+
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+{% endblock %}

@@ -30,7 +30,7 @@ class Scenario(db.Model):
     target = db.Column(db.String(50))
     scoring = db.Column(db.String(50))
     target_type = db.Column(db.String(50))
-    target_distance = db.Column(db.String(50))
+    target_distance = db.Column(db.Integer, nullable=True)
     target_range = db.Column(db.String(50))
     movement_type = db.Column(db.String(50))
     movement_action = db.Column(db.String(50))
@@ -69,3 +69,13 @@ from app import login
 def load_user(user_id):
     from app.models import User
     return User.query.get(int(user_id))
+
+# -----------------------------
+# Marvel Rivals Hero List
+# -----------------------------
+class Character(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"<Character {self.name}>"

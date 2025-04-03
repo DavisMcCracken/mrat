@@ -129,3 +129,70 @@ def leaderboard():
                            form=form,
                            scenario=selected_scenario,
                            entries=entries)
+
+@bp.route('/submit-scenario', methods=['GET', 'POST'])
+@login_required
+def submit_scenario():
+    from app.forms import ScenarioForm
+    from app.models import Character  # to resolve hero/target IDs
+
+    form = ScenarioForm()
+    form.set_dynamic_choices()
+
+    if form.validate_on_submit():
+        # Short helper to safely abbreviate
+        def code(val, length=1): return val[:length].upper() if val else ''
+
+        # Lookup character names from DB
+        hero_name = Character.query.get(form.hero.data).name
+        target_name = Character.query.get(form.target.data).name
+
+        # Generate scenario_code using logic
+        scenario_code = (
+            code(hero_name, 2) +
+            code(target_name, 2) +
+            code(form.target_type.data) +
+            form.target_distance.data +
+            code(form.target_range.data) +
+            code(form.movement_type.data) +
+            code(form.movement_action.data) +
+            code(form.movement_speed.data) +
+            str(form.timer.data) +
+            code(form.stay_behind_line.data[0]) +
+            code(form.use_abilities.data[0]) +
+            code(form.no_ability_cooldown.data[0])
+        ).upper()
+
+        # Prevent duplicates
+        if Scenario.query.filter_by(scenario_code=scenario_code).first():
+            flash('A scenario with these settings already exists.', 'danger')
+            return redirect(url_for('main.submit_scenario'))
+
+        scenario = Scenario(
+            name=form.name.data,
+            author=current_user.username,
+            notes=form.notes.data,
+            tags=",".join(form.tags.data),
+            difficulty=form.difficulty.data,
+            hero=hero_name,
+            target=target_name,
+            scoring=form.scoring.data,
+            target_type=form.target_type.data,
+            target_distance = int(form.target_distance.data) if form.target_distance.data else None,
+            target_range=form.target_range.data,
+            movement_type=form.movement_type.data,
+            movement_action=form.movement_action.data,
+            movement_speed=form.movement_speed.data,
+            timer=form.timer.data,
+            stay_behind_line=form.stay_behind_line.data == 'Yes',
+            use_abilities=form.use_abilities.data == 'Yes',
+            no_ability_cooldown=form.no_ability_cooldown.data == 'True',
+            scenario_code=scenario_code
+        )
+
+        db.session.add(scenario)
+        db.session.commit()
+        flash('Scenario submitted successfully!', 'success')
+        return redirect(url_for('main.scenario_list'))
+
+    return render_template('submit_scenario.html', form=form)

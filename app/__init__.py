@@ -3,8 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from config import Config
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
+migrate = Migrate()
 login = LoginManager()
 csrf = CSRFProtect()
 
@@ -13,6 +15,7 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
+    migrate.init_app(app, db)
     login.init_app(app)
     csrf.init_app(app)
 
