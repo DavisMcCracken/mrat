@@ -4,14 +4,16 @@ from wtforms.validators import DataRequired, NumberRange, Optional, URL
 from app.models import Scenario
 
 class EntryForm(FlaskForm):
-    scenario_id = SelectField('Scenario', coerce=int, validators=[DataRequired()])
+    scenario_id = SelectField('Scenario', coerce=int, validators=[DataRequired()], choices=[(0, '-- Select Scenario --')])
     score = IntegerField('Score', validators=[DataRequired(), NumberRange(min=0)])
     proof = StringField('Proof (link to video)', validators=[Optional(), URL()])
     submit = SubmitField('Submit Score')
 
     def set_choices(self):
         from app.models import Scenario
-        self.scenario_id.choices = [(s.id, s.name) for s in Scenario.query.order_by(Scenario.name).all()]
+        choices = [(0, '-- Select Scenario --')] + [(s.id, s.name) for s in Scenario.query.order_by(Scenario.name).all()]
+        self.scenario_id.choices = choices
+
 
 from wtforms import PasswordField
 from wtforms.validators import EqualTo, Email

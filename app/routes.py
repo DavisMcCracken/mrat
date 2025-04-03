@@ -92,24 +92,20 @@ def play():
     form = EntryForm()
     form.set_choices()
 
-    selected_scenario = None
-    if request.method == 'POST':
-        # Get the selected scenario for display
-        selected_scenario = Scenario.query.get(form.scenario_id.data)
+    # Get scenario_id from query string
+    scenario_id = request.args.get('scenario_id', type=int)
+    selected_scenario = Scenario.query.get(scenario_id) if scenario_id else None
 
-        if form.validate_on_submit():
-            entry = Entry(
-                user_id=current_user.id,
-                scenario_id=form.scenario_id.data,
-                score=form.score.data,
-                proof=form.proof.data
-            )
-            db.session.add(entry)
-            db.session.commit()
-            flash('Score logged successfully!', 'success')
-            return redirect(url_for('main.play'))
-
-    elif form.scenario_id.data:
-        selected_scenario = Scenario.query.get(form.scenario_id.data)
+    if form.validate_on_submit():
+        entry = Entry(
+            user_id=current_user.id,
+            scenario_id=form.scenario_id.data,
+            score=form.score.data,
+            proof=form.proof.data
+        )
+        db.session.add(entry)
+        db.session.commit()
+        flash('Score logged successfully!', 'success')
+        return redirect(url_for('main.play', scenario_id=form.scenario_id.data))
 
     return render_template('play.html', form=form, scenario=selected_scenario)

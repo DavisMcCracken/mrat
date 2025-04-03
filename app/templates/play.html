@@ -8,11 +8,16 @@
 
     <p>
         {{ form.scenario_id.label }}<br>
-        {{ form.scenario_id(onchange="this.form.submit()") }}
+        <select name="scenario_id" id="scenario_id" onchange="window.location.href='?scenario_id=' + this.value">
+            {% for value, label in form.scenario_id.choices %}
+              <option value="{{ value }}" {% if scenario and scenario.id == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>          
     </p>
 
     {% if scenario %}
         <h3>{{ scenario.name }}</h3>
+        <p>{{ scenario.notes }}</p>
         <ul>
             <li><strong>Author:</strong> {{ scenario.author }}</li>
             <li><strong>Tags:</strong> {{ scenario.tags }}</li>
@@ -29,7 +34,6 @@
             <li><strong>Stay Behind Line:</strong> {{ scenario.stay_behind_line }}</li>
             <li><strong>Use Abilities:</strong> {{ scenario.use_abilities }}</li>
             <li><strong>No Ability Cooldown:</strong> {{ scenario.no_ability_cooldown }}</li>
-            <li><strong>Scenario Code:</strong> {{ scenario.scenario_code }}</li>
         </ul>
 
         <h4>Log Score</h4>
