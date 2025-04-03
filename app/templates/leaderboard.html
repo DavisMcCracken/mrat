@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Scenario Leaderboard</h2>
+
+<form method="GET">
+    <p>
+        {{ form.scenario_id.label }}<br>
+        <select name="scenario_id" onchange="this.form.submit()">
+            {% for value, label in form.scenario_id.choices %}
+                <option value="{{ value }}" {% if scenario and scenario.id == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </p>
+</form>
+
+{% if scenario %}
+    <h3>{{ scenario.name }}</h3>
+
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>User</th>
+                <th>Score</th>
+                <th>Proof</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entry in entries %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ entry.user.username }}</td>
+                <td>{{ entry.score }}</td>
+                <td>
+                    {% if entry.proof %}
+                        <a href="{{ entry.proof }}" target="_blank">View</a>
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

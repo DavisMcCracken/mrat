@@ -36,6 +36,8 @@
             <li><strong>No Ability Cooldown:</strong> {{ scenario.no_ability_cooldown }}</li>
         </ul>
 
+        <p><a href="{{ url_for('main.leaderboard', scenario_id=scenario.id) }}">View Leaderboard</a></p>
+
         <h4>Log Score</h4>
         <p>{{ form.score.label }}<br>{{ form.score() }}</p>
         <p>{{ form.proof.label }}<br>{{ form.proof() }}</p>

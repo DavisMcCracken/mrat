@@ -109,3 +109,23 @@ def play():
         return redirect(url_for('main.play', scenario_id=form.scenario_id.data))
 
     return render_template('play.html', form=form, scenario=selected_scenario)
+
+
+@bp.route('/leaderboard')
+def leaderboard():
+    from app.forms import EntryForm  # reuse scenario dropdown logic
+    form = EntryForm()
+    form.set_choices()
+
+    scenario_id = request.args.get('scenario_id', type=int)
+    selected_scenario = Scenario.query.get(scenario_id) if scenario_id else None
+
+    entries = []
+    if selected_scenario:
+        entries = Entry.query.filter_by(scenario_id=selected_scenario.id)\
+                             .order_by(Entry.score.desc()).limit(10).all()
+
+    return render_template('leaderboard.html',
+                           form=form,
+                           scenario=selected_scenario,
+                           entries=entries)
