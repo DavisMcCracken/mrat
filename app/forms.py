@@ -7,6 +7,14 @@ class EntryForm(FlaskForm):
     scenario_id = SelectField('Scenario', coerce=int, validators=[DataRequired()], choices=[(0, '-- Select Scenario --')])
     score = IntegerField('Score', validators=[DataRequired(), NumberRange(min=0)])
     proof = StringField('Proof (link to video)', validators=[Optional(), URL()])
+    rating = SelectField('Rate this scenario (1–5)', choices=[
+        ('', '-- Optional --'),
+        ('1', '★☆☆☆☆'),
+        ('2', '★★☆☆☆'),
+        ('3', '★★★☆☆'),
+        ('4', '★★★★☆'),
+        ('5', '★★★★★')
+    ], validators=[Optional()])
     submit = SubmitField('Submit Score')
 
     def set_choices(self):

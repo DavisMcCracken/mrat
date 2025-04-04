@@ -104,6 +104,26 @@ def play():
             proof=form.proof.data
         )
         db.session.add(entry)
+
+        # Save scenario rating if provided
+        if form.rating.data:
+            from app.models import ScenarioRating  # import should be at top ideally
+
+            existing_rating = ScenarioRating.query.filter_by(
+                user_id=current_user.id,
+                scenario_id=form.scenario_id.data
+            ).first()
+
+            if existing_rating:
+                existing_rating.rating = int(form.rating.data)
+            else:
+                new_rating = ScenarioRating(
+                    user_id=current_user.id,
+                    scenario_id=form.scenario_id.data,
+                    rating=int(form.rating.data)
+                )
+                db.session.add(new_rating)
+
         db.session.commit()
         flash('Score logged successfully!', 'success')
         return redirect(url_for('main.play', scenario_id=form.scenario_id.data))

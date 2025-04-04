@@ -79,3 +79,16 @@ class Character(db.Model):
 
     def __repr__(self):
         return f"<Character {self.name}>"
+    
+# -----------------------------
+# Scenario Rating Model
+# -----------------------------
+class ScenarioRating(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    scenario_id = db.Column(db.Integer, db.ForeignKey('scenario.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'scenario_id', name='unique_user_scenario_rating'),
+    )
