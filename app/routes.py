@@ -22,7 +22,23 @@ def home():
 
 @bp.route('/scenarios')
 def scenario_list():
-    scenarios = Scenario.query.all()
+    from sqlalchemy.sql import func
+    from app.models import Scenario, ScenarioRating
+
+    # Subquery to get average rating and count
+    avg_ratings_subquery = db.session.query(
+        ScenarioRating.scenario_id,
+        func.avg(ScenarioRating.rating).label('avg_rating'),
+        func.count(ScenarioRating.id).label('rating_count')
+    ).group_by(ScenarioRating.scenario_id).subquery()
+
+    # Join with scenarios
+    scenarios = db.session.query(Scenario,
+                                 avg_ratings_subquery.c.avg_rating,
+                                 avg_ratings_subquery.c.rating_count)\
+        .outerjoin(avg_ratings_subquery, Scenario.id == avg_ratings_subquery.c.scenario_id)\
+        .order_by(Scenario.name).all()
+
     return render_template('scenarios.html', scenarios=scenarios)
 
 
@@ -96,6 +112,30 @@ def play():
     scenario_id = request.args.get('scenario_id', type=int)
     selected_scenario = Scenario.query.get(scenario_id) if scenario_id else None
 
+    # New: Calculate average, user rating, and count
+    avg_rating = None
+    user_rating = None
+    rating_count = 0
+
+    if selected_scenario:
+        from sqlalchemy.sql import func
+        from app.models import ScenarioRating
+
+        avg_rating = db.session.query(func.avg(ScenarioRating.rating))\
+            .filter(ScenarioRating.scenario_id == selected_scenario.id)\
+            .scalar()
+
+        rating_count = db.session.query(func.count(ScenarioRating.id))\
+            .filter(ScenarioRating.scenario_id == selected_scenario.id)\
+            .scalar()
+
+        user_rating_row = ScenarioRating.query.filter_by(
+            user_id=current_user.id,
+            scenario_id=selected_scenario.id
+        ).first()
+        if user_rating_row:
+            user_rating = user_rating_row.rating
+
     if form.validate_on_submit():
         entry = Entry(
             user_id=current_user.id,
@@ -107,8 +147,6 @@ def play():
 
         # Save scenario rating if provided
         if form.rating.data:
-            from app.models import ScenarioRating  # import should be at top ideally
-
             existing_rating = ScenarioRating.query.filter_by(
                 user_id=current_user.id,
                 scenario_id=form.scenario_id.data
@@ -128,8 +166,14 @@ def play():
         flash('Score logged successfully!', 'success')
         return redirect(url_for('main.play', scenario_id=form.scenario_id.data))
 
-    return render_template('play.html', form=form, scenario=selected_scenario)
-
+    return render_template(
+        'play.html',
+        form=form,
+        scenario=selected_scenario,
+        avg_rating=avg_rating,
+        rating_count=rating_count,
+        user_rating=user_rating
+    )
 
 @bp.route('/leaderboard')
 def leaderboard():

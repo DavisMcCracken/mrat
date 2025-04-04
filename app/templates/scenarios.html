@@ -10,16 +10,24 @@
             <th>Difficulty</th>
             <th>Hero</th>
             <th>Target</th>
+            <th>Avg Rating</th>
         </tr>
     </thead>
     <tbody>
-    {% for scenario in scenarios %}
+    {% for scenario, avg_rating, rating_count in scenarios %}
         <tr>
             <td>{{ scenario.name }}</td>
             <td>{{ scenario.author }}</td>
             <td>{{ scenario.difficulty }}</td>
             <td>{{ scenario.hero }}</td>
             <td>{{ scenario.target }}</td>
+            <td>
+                {% if avg_rating %}
+                    ⭐ {{ "%.2f"|format(avg_rating) }} ({{ rating_count }})
+                {% else %}
+                    – (0)
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
